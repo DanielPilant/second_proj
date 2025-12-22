@@ -48,28 +48,25 @@ function move() {
     (currentSnake[0] + width >= width * width && direction === width) ||
     (currentSnake[0] % width === width - 1 && direction === 1) ||
     (currentSnake[0] % width === 0 && direction === -1) ||
-    (currentSnake[0] - width < 0 && direction === -width) || // פגע למעלה
-    squares[currentSnake[0] + direction].classList.contains("snake") // פגע בעצמו
+    (currentSnake[0] - width < 0 && direction === -width) ||
+    squares[currentSnake[0] + direction].classList.contains("snake")
   ) {
     return gameOver();
   }
 
-  // חישוב המיקום החדש
-  const tail = currentSnake.pop(); // הסרת הזנב
-  squares[tail].classList.remove("snake"); // מחיקה ויזואלית של הזנב
+  const tail = currentSnake.pop();
+  squares[tail].classList.remove("snake");
 
-  currentSnake.unshift(currentSnake[0] + direction); // הוספת ראש חדש בכיוון התנועה
+  currentSnake.unshift(currentSnake[0] + direction);
 
-  // בדיקה אם הראש החדש הוא תפוח
   if (squares[currentSnake[0]].classList.contains("food")) {
     squares[currentSnake[0]].classList.remove("food");
-    squares[tail].classList.add("snake"); // החזרת הזנב (הנחש גדל)
+    squares[tail].classList.add("snake");
     currentSnake.push(tail);
 
     score++;
     scoreDisplay.textContent = score;
 
-    // הגברת מהירות כל 5 נקודות
     if (score % 5 === 0 && intervalTime > 50) {
       clearInterval(timerId);
       intervalTime = intervalTime * 0.9;
@@ -79,20 +76,17 @@ function move() {
     generateApple();
   }
 
-  squares[currentSnake[0]].classList.add("snake"); // ציור הראש החדש
+  squares[currentSnake[0]].classList.add("snake");
 }
 
-// 4. יצירת תפוח במיקום רנדומלי
 function generateApple() {
   do {
-    // בחירת מספר רנדומלי בין 0 ל-399 (Unit 8 - Math.random בדוגמאות)
     appleIndex = Math.floor(Math.random() * squares.length);
-  } while (squares[appleIndex].classList.contains("snake")); // לוודא שלא נופל על הנחש
+  } while (squares[appleIndex].classList.contains("snake"));
 
   squares[appleIndex].classList.add("food");
 }
 
-// 5. שליטה במקלדת (Unit 11 - DOM Events)
 function control(e) {
   if (e.key === "ArrowRight" && direction !== -1) {
     direction = 1;
@@ -105,20 +99,17 @@ function control(e) {
   }
 }
 
-// 6. סיום משחק
 function gameOver() {
   clearInterval(timerId);
-  msgDisplay.textContent = "המשחק נגמר!";
+  msgDisplay.textContent = "Game Over!";
 
-  // עדכון שיא ב-Local Storage
   if (score > highScore) {
     highScore = score;
     localStorage.setItem("snakeHighScore", highScore);
     highScoreDisplay.textContent = highScore;
-    msgDisplay.textContent += " שיא חדש!";
+    msgDisplay.textContent += " New High Score!";
   }
 }
 
-// האזנה לאירועים
 document.addEventListener("keydown", control);
 startBtn.addEventListener("click", startGame);
