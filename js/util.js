@@ -1,12 +1,14 @@
+// Utility functions for user management
+
 function getAllUsers() {
-  const usersJSON = localStorage.getItem("snakeUsers");
+  const usersJSON = localStorage.getItem("users");
   if (!usersJSON) return [];
   return JSON.parse(usersJSON);
 }
 
 function saveAllUsers(usersArray) {
   const usersJSON = JSON.stringify(usersArray);
-  localStorage.setItem("snakeUsers", usersJSON);
+  localStorage.setItem("users", usersJSON);
 }
 
 function registerUser(username, password) {
