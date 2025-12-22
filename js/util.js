@@ -60,3 +60,14 @@ function loginUser(username, password) {
     return false;
   }
 }
+// פונקציה שמחליפה בין המצבים (מסתירה אחד, מראה את השני)
+function toggleForms() {
+  // 1. תופסים את שני האלמנטים (הטפסים) מה-HTML
+  const loginSec = document.getElementById("login-section");
+  const regSec = document.getElementById("register-section");
+
+  // 2. משנים את המצב שלהם
+  // classList.toggle אומר: "אם יש לו את המחלקה hidden - תוריד אותה. אם אין - תוסיף אותה."
+  loginSec.classList.toggle("hidden");
+  regSec.classList.toggle("hidden");
+}

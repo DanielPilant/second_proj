@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Games!</title>
+    <link rel="stylesheet" href="/css/auth.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <h1>Welcome to My Games!</h1>
+
+      <div id="login-section">
+        <h2>Login</h2>
+        <input type="text" id="loginUser" placeholder="Username" />
+        <input type="password" id="loginPass" placeholder="Password" />
+        <button onclick="loginUser()">Login</button>
+        <p class="toggle-text" onclick="toggleForms()">
+          Don't have an account? <span>Register here</span>
+        </p>
+      </div>
+
+      <div id="register-section" class="hidden">
+        <h2>New Registration</h2>
+        <input type="text" id="regUser" placeholder="Choose Username" />
+        <input type="password" id="regPass" placeholder="Choose Password" />
+        <button onclick="registerUser()">Register</button>
+        <p class="toggle-text" onclick="toggleForms()">
+          Already registered? <span>Login here</span>
+        </p>
+      </div>
+    </div>
+
+    <script src="/js/util.js"></script>
+  </body>
+</html>
