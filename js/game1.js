@@ -1,21 +1,27 @@
-const width = 20;
-const gridElement = document.getElementById("grid");
-const scoreDisplay = document.getElementById("currentScore");
-const highScoreDisplay = document.getElementById("highScore");
-const startBtn = document.getElementById("startBtn");
-const msgDisplay = document.getElementById("message");
+// JavaScript for Snake Game
 
-let squares = [];
-let currentSnake = [2, 1, 0];
-let direction = 1;
-let appleIndex = 0;
-let score = 0;
-let intervalTime = 200;
-let timerId = 0;
+const width = 20; // 20x20 grid
+const gridElement = document.getElementById("grid"); // The main grid container
+const scoreDisplay = document.getElementById("currentScore"); // Current score display
+const highScoreDisplay = document.getElementById("highScore"); // High score display
+const startBtn = document.getElementById("startBtn"); // Start button
+const pauseBtn = document.getElementById("pauseBtn"); // Pause button
+const msgDisplay = document.getElementById("message"); // Message display
 
-let highScore = localStorage.getItem("snakeHighScore") || 0;
-highScoreDisplay.textContent = highScore;
+let squares = []; // Array to hold grid squares
+let currentSnake = [2, 1, 0]; // Initial snake positions
+let direction = 1; // Initial direction (moving right)
+let appleIndex = 0; // Initial apple position
+let score = 0; // Initial score
+let intervalTime = 200; // Initial speed
+let timerId = 0; // Timer ID for game loop
 
+let highScore = localStorage.getItem("snakeHighScore") || 0; // Retrieve high score from local storage
+highScoreDisplay.textContent = highScore; // Display high score
+
+// -------------- functions -------------- //
+
+// Create the grid by generating divs for each square in the css grid
 function createGrid() {
   for (let i = 0; i < width * width; i++) {
     const square = document.createElement("div");
@@ -25,6 +31,7 @@ function createGrid() {
 }
 createGrid();
 
+// Start or restart the game
 function startGame() {
   currentSnake.forEach((index) => squares[index].classList.remove("snake"));
   squares[appleIndex].classList.remove("food");
@@ -63,7 +70,8 @@ function move() {
     squares[currentSnake[0]].classList.remove("food");
     squares[tail].classList.add("snake");
     currentSnake.push(tail);
-
+    intervalTime += 20;
+    console.log(intervalTime);
     score++;
     scoreDisplay.textContent = score;
 
@@ -88,13 +96,13 @@ function generateApple() {
 }
 
 function control(e) {
-  if (e.key === "ArrowRight" && direction !== -1) {
+  if ((e.key === "ArrowRight" || e.key === "d") && direction !== -1) {
     direction = 1;
-  } else if (e.key === "ArrowUp" && direction !== width) {
+  } else if ((e.key === "ArrowUp" || e.key === "w") && direction !== width) {
     direction = -width;
-  } else if (e.key === "ArrowLeft" && direction !== 1) {
+  } else if ((e.key === "ArrowLeft" || e.key === "a") && direction !== 1) {
     direction = -1;
-  } else if (e.key === "ArrowDown" && direction !== -width) {
+  } else if ((e.key === "ArrowDown" || e.key === "s") && direction !== -width) {
     direction = width;
   }
 }
