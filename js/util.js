@@ -60,14 +60,14 @@ function loginUser(username, password) {
     return false;
   }
 }
-// פונקציה שמחליפה בין המצבים (מסתירה אחד, מראה את השני)
+// Function that toggles between states (hides one, shows the other)
 function toggleForms() {
-  // 1. תופסים את שני האלמנטים (הטפסים) מה-HTML
+  // 1. Get both elements (forms) from HTML
   const loginSec = document.getElementById("login-section");
   const regSec = document.getElementById("register-section");
 
-  // 2. משנים את המצב שלהם
-  // classList.toggle אומר: "אם יש לו את המחלקה hidden - תוריד אותה. אם אין - תוסיף אותה."
+  // 2. Change their state
+  // classList.toggle means: "If it has the class hidden - remove it. If not - add it."
   loginSec.classList.toggle("hidden");
   regSec.classList.toggle("hidden");
 }
