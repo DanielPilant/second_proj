@@ -16,8 +16,18 @@ let score = 0; // Initial score
 let intervalTime = 200; // Initial speed
 let timerId = 0; // Timer ID for game loop
 
-let highScore = localStorage.getItem("snakeHighScore") || 0; // Retrieve high score from local storage
-highScoreDisplay.textContent = highScore; // Display high score
+const currentUser = localStorage.getItem("currentUser");
+if (!currentUser) {
+  window.location.href = "../index.html";
+}
+let users = JSON.parse(localStorage.getItem("users")) || [];
+const loggedInUser = users.find((u) => u.username === currentUser);
+let highScore = 0;
+if (loggedInUser && loggedInUser.games && loggedInUser.games.snake) {
+  highScore = loggedInUser.games.snake.highScore;
+}
+
+highScoreDisplay.textContent = highScore;
 
 // -------------- functions -------------- //
 
@@ -111,13 +121,34 @@ function gameOver() {
   clearInterval(timerId);
   msgDisplay.textContent = "Game Over!";
 
-  if (score > highScore) {
-    highScore = score;
-    localStorage.setItem("snakeHighScore", highScore);
-    highScoreDisplay.textContent = highScore;
-    msgDisplay.textContent += " New High Score!";
+  // 1. Retrieve the current list from memory
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  // 2. Find the index (location) of the user in the list
+  const userIndex = users.findIndex((u) => u.username === currentUser);
+
+  // If the user is found (and they should be found if logged in)
+  if (userIndex !== -1) {
+    // Helper variable for easy access to snake data
+    let snakeStats = users[userIndex].games.snake;
+
+    // Update the number of games played
+    snakeStats.gamesPlayed += 1;
+
+    // Check if a record was broken
+    if (score > snakeStats.highScore) {
+      snakeStats.highScore = score;
+      highScore = score; // Update local variable
+      highScoreDisplay.textContent = highScore; // Update display
+      msgDisplay.textContent += " New High Score!";
+    }
+
+    // Very important: Return the updated data into the main user
+    users[userIndex].games.snake = snakeStats;
+
+    // 3. Final save to Local Storage
+    localStorage.setItem("users", JSON.stringify(users));
   }
 }
-
 document.addEventListener("keydown", control);
 startBtn.addEventListener("click", startGame);
