@@ -61,7 +61,7 @@ function loginUser(username, password) {
   if (user) {
     // Found! Save in separate memory who is currently logged in
     localStorage.setItem(CURRENT_USER_KEY, username);
-    window.location.href = "../html/game1.html";
+    window.location.href = "../html/lobby.html";
 
     // Here we usually redirect the user to the game page
     // window.location.href = "game.html";

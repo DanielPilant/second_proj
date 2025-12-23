@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PVP Chess Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 600px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .board-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .turn-indicator {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        #chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 70px);
+            grid-template-rows: repeat(8, 70px);
+            border: 3px solid #333;
+            margin: 0 auto;
+        }
+
+        .square {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        .light {
+            background-color: #f0d9b5;
+        }
+
+        .dark {
+            background-color: #b58863;
+        }
+
+        .selected {
+            background-color: #7fc97f !important;
+        }
+
+        .valid-move {
+            background-color: #ffeb3b !important;
+        }
+
+        .piece {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .piece.moving {
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .piece.captured {
+            animation: captureAnimation 0.4s ease-out;
+        }
+
+        @keyframes captureAnimation {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3) rotate(180deg);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .square.highlight-from {
+            animation: pulseFrom 0.3s ease;
+        }
+
+        @keyframes pulseFrom {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .history-panel, .leaderboard-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .history-panel h2, .leaderboard-panel h2 {
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .move-entry {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .leaderboard-entry {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .winner-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .winner-popup h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .winner-popup input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .winner-popup button {
+            padding: 12px 30px;
+            margin: 10px 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .winner-popup button:hover {
+            background: #5568d3;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>♔ PVP Chess Game ♚</h1>
+        
+        <div class="history-panel">
+            <h2>Move History</h2>
+            <div id="moveHistory"></div>
+        </div>
+
+        <div class="board-container">
+            <div class="turn-indicator" id="turnIndicator">White's Turn</div>
+            <div id="chessboard"></div>
+        </div>
+
+        <div class="leaderboard-panel">
+            <h2>Leaderboard</h2>
+            <div id="leaderboard"></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="winner-popup" id="winnerPopup">
+        <h2 id="winnerText"></h2>
+        <p>Total moves: <span id="totalMoves"></span></p>
+        <input type="text" id="winnerName" placeholder="Enter winner's name">
+        <div>
+            <button onclick="saveToLeaderboard()">Save to Leaderboard</button>
+            <button onclick="resetGame()">New Game</button>
+        </div>
+    </div>
+
+    <script>
+        var board = [];
+        var selectedSquare = null;
+        var currentTurn = 'white';
+        var moveHistory = [];
+        var moveCount = 0;
+        var leaderboard = [];
+
+        var pieces = {
+            white: {
+                king: '♔',
+                queen: '♕',
+                rook: '♖',
+                bishop: '♗',
+                knight: '♘',
+                pawn: '♙'
+            },
+            black: {
+                king: '♚',
+                queen: '♛',
+                rook: '♜',
+                bishop: '♝',
+                knight: '♞',
+                pawn: '♟'
+            }
+        };
+
+        function initBoard() {
+            board = [
+                ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+                ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+                ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖']
+            ];
+            renderBoard();
+            loadLeaderboard();
+        }
+
+        function renderBoard() {
+            var chessboard = document.getElementById('chessboard');
+            chessboard.innerHTML = '';
+
+            for (var row = 0; row < 8; row++) {
+                for (var col = 0; col < 8; col++) {
+                    var square = document.createElement('div');
+                    square.setAttribute('data-row', row);
+                    square.setAttribute('data-col', col);
+                    
+                    var isLight = (row + col) % 2 === 0;
+                    square.className = 'square ' + (isLight ? 'light' : 'dark');
+                    
+                    if (board[row][col]) {
+                        var piece = document.createElement('div');
+                        piece.className = 'piece';
+                        piece.textContent = board[row][col];
+                        square.appendChild(piece);
+                    }
+                    
+                    square.addEventListener('click', function() {
+                        handleSquareClick(this);
+                    });
+                    
+                    chessboard.appendChild(square);
+                }
+            }
+        }
+
+        function handleSquareClick(square) {
+            var row = parseInt(square.getAttribute('data-row'));
+            var col = parseInt(square.getAttribute('data-col'));
+            var piece = board[row][col];
+
+            if (selectedSquare) {
+                var fromRow = selectedSquare.row;
+                var fromCol = selectedSquare.col;
+                
+                if (isValidMove(fromRow, fromCol, row, col)) {
+                    movePiece(fromRow, fromCol, row, col);
+                    clearHighlights();
+                    selectedSquare = null;
+                } else {
+                    clearHighlights();
+                    selectedSquare = null;
+                    
+                    if (piece && isPieceColor(piece, currentTurn)) {
+                        selectSquare(row, col, square);
+                    }
+                }
+            } else {
+                if (piece && isPieceColor(piece, currentTurn)) {
+                    selectSquare(row, col, square);
+                }
+            }
+        }
+
+        function selectSquare(row, col, square) {
+            selectedSquare = { row: row, col: col };
+            square.classList.add('selected');
+            highlightValidMoves(row, col);
+        }
+
+        function clearHighlights() {
+            var squares = document.querySelectorAll('.square');
+            for (var i = 0; i < squares.length; i++) {
+                squares[i].classList.remove('selected', 'valid-move');
+            }
+        }
+
+        function highlightValidMoves(row, col) {
+            for (var r = 0; r < 8; r++) {
+                for (var c = 0; c < 8; c++) {
+                    if (isValidMove(row, col, r, c)) {
+                        var squares = document.querySelectorAll('.square');
+                        var index = r * 8 + c;
+                        squares[index].classList.add('valid-move');
+                    }
+                }
+            }
+        }
+
+        function isPieceColor(piece, color) {
+            var whitePieces = ['♔', '♕', '♖', '♗', '♘', '♙'];
+            var blackPieces = ['♚', '♛', '♜', '♝', '♞', '♟'];
+            
+            if (color === 'white') {
+                return whitePieces.indexOf(piece) !== -1;
+            } else {
+                return blackPieces.indexOf(piece) !== -1;
+            }
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            if (fromRow === toRow && fromCol === toCol) return false;
+            if (toRow < 0 || toRow > 7 || toCol < 0 || toCol > 7) return false;
+            
+            var piece = board[fromRow][fromCol];
+            var targetPiece = board[toRow][toCol];
+            
+            if (targetPiece && isPieceColor(targetPiece, currentTurn)) return false;
+
+            var rowDiff = Math.abs(toRow - fromRow);
+            var colDiff = Math.abs(toCol - fromCol);
+
+            if (piece === '♙' || piece === '♟') {
+                var direction = piece === '♙' ? -1 : 1;
+                var startRow = piece === '♙' ? 6 : 1;
+                
+                if (toCol === fromCol && !targetPiece) {
+                    if (toRow === fromRow + direction) return true;
+                    if (fromRow === startRow && toRow === fromRow + 2 * direction && !board[fromRow + direction][fromCol]) return true;
+                }
+                
+                if (colDiff === 1 && toRow === fromRow + direction && targetPiece) {
+                    return true;
+                }
+                return false;
+            }
+
+            if (piece === '♖' || piece === '♜') {
+                if (rowDiff === 0 || colDiff === 0) {
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+                }
+                return false;
+            }
+
+            if (piece === '♗' || piece === '♝') {
+                if (rowDiff === colDiff) {
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+                }
+                return false;
+            }
+
+            if (piece === '♕' || piece === '♛') {
+                if (rowDiff === 0 || colDiff === 0 || rowDiff === colDiff) {
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+                }
+                return false;
+            }
+
+            if (piece === '♘' || piece === '♞') {
+                if ((rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2)) {
+                    return true;
+                }
+                return false;
+            }
+
+            if (piece === '♔' || piece === '♚') {
+                if (rowDiff <= 1 && colDiff <= 1) {
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
+
+        function isPathClear(fromRow, fromCol, toRow, toCol) {
+            var rowStep = toRow > fromRow ? 1 : (toRow < fromRow ? -1 : 0);
+            var colStep = toCol > fromCol ? 1 : (toCol < fromCol ? -1 : 0);
+            
+            var currentRow = fromRow + rowStep;
+            var currentCol = fromCol + colStep;
+            
+            while (currentRow !== toRow || currentCol !== toCol) {
+                if (board[currentRow][currentCol]) return false;
+                currentRow += rowStep;
+                currentCol += colStep;
+            }
+            
+            return true;
+        }
+
+        function movePiece(fromRow, fromCol, toRow, toCol) {
+            var piece = board[fromRow][fromCol];
+            var capturedPiece = board[toRow][toCol];
+            
+            // Animate the move
+            animateMove(fromRow, fromCol, toRow, toCol, function() {
+                board[toRow][toCol] = piece;
+                board[fromRow][fromCol] = '';
+                
+                moveCount++;
+                addMoveToHistory(piece, fromRow, fromCol, toRow, toCol, capturedPiece);
+                
+                if (capturedPiece === '♔' || capturedPiece === '♚') {
+                    showWinner(currentTurn);
+                } else {
+                    currentTurn = currentTurn === 'white' ? 'black' : 'white';
+                    updateTurnIndicator();
+                }
+                
+                renderBoard();
+            });
+        }
+
+        function animateMove(fromRow, fromCol, toRow, toCol, callback) {
+            var squares = document.querySelectorAll('.square');
+            var fromIndex = fromRow * 8 + fromCol;
+            var toIndex = toRow * 8 + toCol;
+            
+            var fromSquare = squares[fromIndex];
+            var toSquare = squares[toIndex];
+            
+            var pieceElement = fromSquare.querySelector('.piece');
+            if (!pieceElement) {
+                callback();
+                return;
+            }
+
+            // Highlight source square
+            fromSquare.classList.add('highlight-from');
+
+            // Get positions
+            var fromRect = fromSquare.getBoundingClientRect();
+            var toRect = toSquare.getBoundingClientRect();
+            
+            var deltaX = toRect.left - fromRect.left;
+            var deltaY = toRect.top - fromRect.top;
+
+            // Clone the piece for animation
+            var movingPiece = pieceElement.cloneNode(true);
+            movingPiece.classList.add('moving');
+            movingPiece.style.position = 'fixed';
+            movingPiece.style.left = fromRect.left + 'px';
+            movingPiece.style.top = fromRect.top + 'px';
+            movingPiece.style.width = fromRect.width + 'px';
+            movingPiece.style.height = fromRect.height + 'px';
+            movingPiece.style.fontSize = '50px';
+            movingPiece.style.display = 'flex';
+            movingPiece.style.alignItems = 'center';
+            movingPiece.style.justifyContent = 'center';
+            movingPiece.style.zIndex = '1000';
+            
+            document.body.appendChild(movingPiece);
+
+            // Hide original piece
+            pieceElement.style.opacity = '0';
+
+            // Animate captured piece if exists
+            var capturedElement = toSquare.querySelector('.piece');
+            if (capturedElement) {
+                capturedElement.classList.add('captured');
+            }
+
+            // Animate the move
+            setTimeout(function() {
+                movingPiece.style.transform = 'translate(' + deltaX + 'px, ' + deltaY + 'px)';
+            }, 10);
+
+            // Complete the animation
+            setTimeout(function() {
+                document.body.removeChild(movingPiece);
+                fromSquare.classList.remove('highlight-from');
+                callback();
+            }, 350);
+        }
+
+        function updateTurnIndicator() {
+            var indicator = document.getElementById('turnIndicator');
+            indicator.textContent = currentTurn === 'white' ? "White's Turn" : "Black's Turn";
+        }
+
+        function addMoveToHistory(piece, fromRow, fromCol, toRow, toCol, captured) {
+            var cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            var fromPos = cols[fromCol] + (8 - fromRow);
+            var toPos = cols[toCol] + (8 - toRow);
+            
+            var moveText = moveCount + '. ' + piece + ' ' + fromPos + ' → ' + toPos;
+            if (captured) {
+                moveText += ' (captured ' + captured + ')';
+            }
+            
+            moveHistory.push(moveText);
+            
+            var historyDiv = document.getElementById('moveHistory');
+            var entry = document.createElement('div');
+            entry.className = 'move-entry';
+            entry.textContent = moveText;
+            historyDiv.appendChild(entry);
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+        }
+
+        function showWinner(winner) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('winnerPopup').style.display = 'block';
+            document.getElementById('winnerText').textContent = (winner === 'white' ? 'White' : 'Black') + ' Wins!';
+            document.getElementById('totalMoves').textContent = moveCount;
+        }
+
+        function saveToLeaderboard() {
+            var name = document.getElementById('winnerName').value.trim();
+            if (!name) {
+                alert('Please enter a name!');
+                return;
+            }
+            
+            var entry = {
+                name: name,
+                moves: moveCount,
+                date: new Date().toLocaleDateString()
+            };
+            
+            leaderboard.push(entry);
+            leaderboard.sort(function(a, b) {
+                return a.moves - b.moves;
+            });
+            
+            if (leaderboard.length > 10) {
+                leaderboard = leaderboard.slice(0, 10);
+            }
+            
+            localStorage.setItem('chessLeaderboard', JSON.stringify(leaderboard));
+            displayLeaderboard();
+            resetGame();
+        }
+
+        function loadLeaderboard() {
+            var saved = localStorage.getItem('chessLeaderboard');
+            if (saved) {
+                leaderboard = JSON.parse(saved);
+                displayLeaderboard();
+            }
+        }
+
+        function displayLeaderboard() {
+            var leaderboardDiv = document.getElementById('leaderboard');
+            leaderboardDiv.innerHTML = '';
+            
+            if (leaderboard.length === 0) {
+                leaderboardDiv.innerHTML = '<p style="text-align: center; color: #999;">No entries yet</p>';
+                return;
+            }
+            
+            for (var i = 0; i < leaderboard.length; i++) {
+                var entry = document.createElement('div');
+                entry.className = 'leaderboard-entry';
+                entry.innerHTML = '<span><strong>' + (i + 1) + '.</strong> ' + leaderboard[i].name + '</span><span><strong>' + leaderboard[i].moves + '</strong> moves</span>';
+                leaderboardDiv.appendChild(entry);
+            }
+        }
+
+        function resetGame() {
+            board = [];
+            selectedSquare = null;
+            currentTurn = 'white';
+            moveHistory = [];
+            moveCount = 0;
+            
+            document.getElementById('moveHistory').innerHTML = '';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('winnerPopup').style.display = 'none';
+            document.getElementById('winnerName').value = '';
+            
+            initBoard();
+            updateTurnIndicator();
+        }
+
+        initBoard();
+    </script>
+</body>
+</html>
