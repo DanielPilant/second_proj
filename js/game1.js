@@ -80,8 +80,6 @@ function move() {
     squares[currentSnake[0]].classList.remove("food");
     squares[tail].classList.add("snake");
     currentSnake.push(tail);
-    intervalTime += 20;
-    console.log(intervalTime);
     score++;
     scoreDisplay.textContent = score;
 
