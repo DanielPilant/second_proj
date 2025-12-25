@@ -5,10 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>snake</title>
     <link rel="stylesheet" href="../css/game1.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
+    <audio loop hidden id="gamemusic">
+      <source
+        src="/assets/sound_effects/retro/8bit-music-for-game.mp3"
+        type="audio/mpeg"
+      />
+      Your browser does not support the audio element.
+    </audio>
+    <audio hidden id="coin-sound">
+      <source
+        src="/assets/sound_effects/retro/retro-coin.mp3"
+        type="audio/mpeg"
+      />
+      Your browser does not support the audio element.
+    </audio>
+    <audio hidden id="lose-sound">
+      <source src="/assets/sound_effects/retro/lose.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
     <div class="game-container">
-      <h1>snake game 1</h1>
+      <h1>snake</h1>
 
       <div class="score-board">
         <div>Current Score: <span id="currentScore">0</span></div>

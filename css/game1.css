@@ -10,12 +10,19 @@ body {
   margin: 0;
 }
 
+h1 {
+  font-family: "Jersey 10", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 80px;
+}
+
 .game-container {
   text-align: center;
-  background: white;
-  padding: 20px;
-  border-radius: 20px;
+  background: rgb(198, 255, 238);
+  padding: 40px;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
 }
 
 .score-board {
@@ -23,19 +30,20 @@ body {
   justify-content: space-around;
   margin-bottom: 10px;
   font-size: 1.2rem;
-  font-weight: bold;
+  font-family: "Jersey 10", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .grid {
   width: 400px;
   height: 400px;
-  background-color: #333;
+  background-image: url("/assets/images/snakeDirt.png");
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   grid-template-rows: repeat(20, 1fr);
-  border: 5px solid #555;
+  border: 5px solid #000000;
   margin: 0 auto 20px auto;
-  border-radius: 5px;
 }
 
 .grid div {
@@ -43,25 +51,44 @@ body {
   height: 20px;
 }
 
-.snake {
-  background-color: #4caf50;
-  border-radius: 4px;
+.snake-part {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform-origin: center center;
+}
+
+.snake-head {
+  background-image: url("/assets/images/head.png");
+}
+
+.snake-body {
+  background-color: #a1c432;
+  border-radius: 7px;
 }
 
 .food {
-  background-color: #ff5722;
-  border-radius: 50%;
-  transform: scale(0.8);
+  background-color: transparent;
+  background-image: url("/assets/images/apple.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: pulse 0.8s infinite alternate;
+  z-index: 10;
 }
 
 button {
   padding: 10px 20px;
   font-size: 1rem;
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #d82b2b;
   color: white;
   border: none;
   border-radius: 5px;
+  font-family: "Jersey 10", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 30px;
 }
 
 button:hover {
@@ -73,4 +100,13 @@ button:hover {
   font-weight: bold;
   margin-top: 10px;
   height: 20px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1.2);
+  }
 }

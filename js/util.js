@@ -1,19 +1,22 @@
-// Utility functions for user management
+// =============== Utility functions for user management ============== //
 
 const USERS_KEY = "users";
 const CURRENT_USER_KEY = "currentUser";
 
+// Retrieve all users from localStorage
 function getAllUsers() {
   const usersJSON = localStorage.getItem(USERS_KEY);
   if (!usersJSON) return [];
   return JSON.parse(usersJSON);
 }
 
+// Save all users to localStorage
 function saveAllUsers(usersArray) {
   const usersJSON = JSON.stringify(usersArray);
   localStorage.setItem(USERS_KEY, usersJSON);
 }
 
+// Register a new user
 function registerUser(username, password) {
   const users = getAllUsers(); // 1. Get everyone
 
@@ -50,12 +53,13 @@ function registerUser(username, password) {
   return true;
 }
 
+// Login an existing user
 function loginUser(username, password) {
   const users = getAllUsers();
 
   // Search for user with same name and password
   const user = users.find(
-    (u) => u.username === username && u.password === password
+    (user) => user.username === username && user.password === password
   );
 
   if (user) {
@@ -71,7 +75,8 @@ function loginUser(username, password) {
     return false;
   }
 }
-// Functions that connect the button in HTML to our logic
+
+// =============== Functions that connect the buttons in HTML to our logic ================ //
 
 function handleRegisterClick() {
   // Critical step: retrieving information from fields in HTML

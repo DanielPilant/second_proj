@@ -7,6 +7,9 @@ const highScoreDisplay = document.getElementById("highScore"); // High score dis
 const startBtn = document.getElementById("startBtn"); // Start button
 const pauseBtn = document.getElementById("pauseBtn"); // Pause button
 const msgDisplay = document.getElementById("message"); // Message display
+const soundtrack = document.getElementById("gamemusic"); // Background music
+const coinSound = document.getElementById("coin-sound"); // Sound when eating apple
+const loseSound = document.getElementById("lose-sound"); // Sound on game over
 
 let squares = []; // Array to hold grid squares
 let currentSnake = [2, 1, 0]; // Initial snake positions
@@ -21,7 +24,7 @@ if (!currentUser) {
   window.location.href = "../index.html";
 }
 let users = JSON.parse(localStorage.getItem("users")) || [];
-const loggedInUser = users.find((u) => u.username === currentUser);
+const loggedInUser = users.find((user) => user.username === currentUser);
 let highScore = 0;
 if (loggedInUser && loggedInUser.games && loggedInUser.games.snake) {
   highScore = loggedInUser.games.snake.highScore;
@@ -43,8 +46,16 @@ createGrid();
 
 // Start or restart the game
 function startGame() {
-  currentSnake.forEach((index) => squares[index].classList.remove("snake"));
+  soundtrack.volume = 0.2;
+  soundtrack.play();
+
+  squares.forEach((square) => {
+    square.classList.remove("snake-head", "snake-body", "snake-part");
+    square.style.transform = "";
+  });
+
   squares[appleIndex].classList.remove("food");
+
   clearInterval(timerId);
 
   currentSnake = [2, 1, 0];
@@ -54,7 +65,8 @@ function startGame() {
   intervalTime = 200;
   msgDisplay.textContent = "";
 
-  currentSnake.forEach((index) => squares[index].classList.add("snake"));
+  drawSnake();
+
   generateApple();
 
   timerId = setInterval(move, intervalTime);
@@ -66,20 +78,28 @@ function move() {
     (currentSnake[0] % width === width - 1 && direction === 1) ||
     (currentSnake[0] % width === 0 && direction === -1) ||
     (currentSnake[0] - width < 0 && direction === -width) ||
-    squares[currentSnake[0] + direction].classList.contains("snake")
+    squares[currentSnake[0] + direction].classList.contains("snake-body")
   ) {
+    soundtrack.pause();
+    soundtrack.currentTime = 0;
+    loseSound.volume = 0.3;
+    loseSound.play();
     return gameOver();
   }
 
   const tail = currentSnake.pop();
-  squares[tail].classList.remove("snake");
+  squares[tail].classList.remove("snake-head", "snake-body", "snake-part");
+  squares[tail].style.transform = "";
 
   currentSnake.unshift(currentSnake[0] + direction);
 
   if (squares[currentSnake[0]].classList.contains("food")) {
+    coinSound.volume = 0.5;
+    coinSound.play();
     squares[currentSnake[0]].classList.remove("food");
-    squares[tail].classList.add("snake");
+
     currentSnake.push(tail);
+
     score++;
     scoreDisplay.textContent = score;
 
@@ -91,14 +111,12 @@ function move() {
 
     generateApple();
   }
-
-  squares[currentSnake[0]].classList.add("snake");
+  drawSnake();
 }
-
 function generateApple() {
   do {
     appleIndex = Math.floor(Math.random() * squares.length);
-  } while (squares[appleIndex].classList.contains("snake"));
+  } while (squares[appleIndex].classList.contains("snake-part"));
 
   squares[appleIndex].classList.add("food");
 }
@@ -148,5 +166,31 @@ function gameOver() {
     localStorage.setItem("users", JSON.stringify(users));
   }
 }
+
+function drawSnake() {
+  currentSnake.forEach((index, i) => {
+    const square = squares[index];
+    square.classList.remove("snake-head", "snake-body", "snake-part");
+    square.style.transform = "";
+    square.classList.add("snake-part");
+
+    if (i === 0) {
+      square.classList.add("snake-head");
+      square.style.transform = getRotationStyle(direction) + " scale(1.5)";
+    } else {
+      square.classList.add("snake-body");
+    }
+  });
+}
+
+function getRotationStyle(dir) {
+  if (dir === width) return "rotate(0deg)";
+  if (dir === -width) return "rotate(180deg)";
+  if (dir === 1) return "rotate(-90deg)";
+  if (dir === -1) return "rotate(90deg)";
+
+  return "rotate(0deg)";
+}
+
 document.addEventListener("keydown", control);
 startBtn.addEventListener("click", startGame);
