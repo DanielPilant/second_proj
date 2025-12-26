@@ -77,6 +77,16 @@ h1 {
   z-index: 10;
 }
 
+.diamond {
+  background-color: transparent;
+  background-image: url("/assets/images/diamond.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: pulse 0.8s infinite alternate;
+  z-index: 10;
+}
+
 button {
   padding: 10px 20px;
   font-size: 1rem;
@@ -86,7 +96,7 @@ button {
   border: none;
   border-radius: 5px;
   font-family: "Jersey 10", sans-serif;
-  font-weight: 100;
+  font-weight: 400;
   font-style: normal;
   font-size: 30px;
 }
@@ -100,6 +110,10 @@ button:hover {
   font-weight: bold;
   margin-top: 10px;
   height: 20px;
+  font-family: "Jersey 10", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 30px;
 }
 
 @keyframes pulse {

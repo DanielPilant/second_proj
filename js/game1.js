@@ -10,11 +10,14 @@ const msgDisplay = document.getElementById("message"); // Message display
 const soundtrack = document.getElementById("gamemusic"); // Background music
 const coinSound = document.getElementById("coin-sound"); // Sound when eating apple
 const loseSound = document.getElementById("lose-sound"); // Sound on game over
+const diamondAppearSound = document.getElementById("diamond-appear-sound"); // Sound when diamond appears
+const diamondEatSound = document.getElementById("diamond-eat-sound"); // Sound when eating diamond
 
 let squares = []; // Array to hold grid squares
 let currentSnake = [2, 1, 0]; // Initial snake positions
 let direction = 1; // Initial direction (moving right)
 let appleIndex = 0; // Initial apple position
+let diamondIndex = 0; // Initial diamond position
 let score = 0; // Initial score
 let intervalTime = 200; // Initial speed
 let timerId = 0; // Timer ID for game loop
@@ -46,11 +49,18 @@ createGrid();
 
 // Start or restart the game
 function startGame() {
+  console.log("Game started");
   soundtrack.volume = 0.2;
   soundtrack.play();
 
   squares.forEach((square) => {
-    square.classList.remove("snake-head", "snake-body", "snake-part");
+    square.classList.remove(
+      "snake-head",
+      "snake-body",
+      "snake-part",
+      "food",
+      "diamond"
+    );
     square.style.transform = "";
   });
 
@@ -64,9 +74,9 @@ function startGame() {
   direction = 1;
   intervalTime = 200;
   msgDisplay.textContent = "";
+  diamondIndex = 0;
 
   drawSnake();
-
   generateApple();
 
   timerId = setInterval(move, intervalTime);
@@ -93,13 +103,20 @@ function move() {
 
   currentSnake.unshift(currentSnake[0] + direction);
 
+  if (squares[currentSnake[0]].classList.contains("diamond")) {
+    diamondEatSound.volume = 0.5;
+    diamondEatSound.play();
+    squares[currentSnake[0]].classList.remove("diamond");
+    diamondIndex = 0;
+    score += 5;
+    scoreDisplay.textContent = score;
+  }
+
   if (squares[currentSnake[0]].classList.contains("food")) {
     coinSound.volume = 0.5;
     coinSound.play();
     squares[currentSnake[0]].classList.remove("food");
-
     currentSnake.push(tail);
-
     score++;
     scoreDisplay.textContent = score;
 
@@ -110,6 +127,7 @@ function move() {
     }
 
     generateApple();
+    generateDiamond();
   }
   drawSnake();
 }
@@ -119,6 +137,27 @@ function generateApple() {
   } while (squares[appleIndex].classList.contains("snake-part"));
 
   squares[appleIndex].classList.add("food");
+}
+
+function generateDiamond() {
+  console.log("Generating diamond");
+  console.log(diamondIndex);
+  if (diamondIndex !== 0) return;
+
+  var randomChance = Math.random();
+  console.log(randomChance);
+  if (randomChance > 0.3) return;
+
+  diamondAppearSound.volume = 0.5;
+  diamondAppearSound.play();
+  do {
+    diamondIndex = Math.floor(Math.random() * squares.length);
+  } while (
+    squares[diamondIndex].classList.contains("snake-part") ||
+    squares[diamondIndex].classList.contains("food")
+  );
+
+  squares[diamondIndex].classList.add("diamond");
 }
 
 function control(e) {
@@ -176,7 +215,7 @@ function drawSnake() {
 
     if (i === 0) {
       square.classList.add("snake-head");
-      square.style.transform = getRotationStyle(direction) + " scale(1.5)";
+      square.style.transform = getRotationStyle(direction) + " scale(1.8)";
     } else {
       square.classList.add("snake-body");
     }
