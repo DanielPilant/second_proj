@@ -12,6 +12,8 @@ const coinSound = document.getElementById("coin-sound"); // Sound when eating ap
 const loseSound = document.getElementById("lose-sound"); // Sound on game over
 const diamondAppearSound = document.getElementById("diamond-appear-sound"); // Sound when diamond appears
 const diamondEatSound = document.getElementById("diamond-eat-sound"); // Sound when eating diamond
+const diamondTimerBar = document.getElementById("diamond-timer-bar"); // Diamond timer bar
+const diamondContainer = document.getElementById("diamond-timer-container"); // Diamond timer container
 
 let squares = []; // Array to hold grid squares
 let currentSnake = [2, 1, 0]; // Initial snake positions
@@ -21,6 +23,8 @@ let diamondIndex = 0; // Initial diamond position
 let score = 0; // Initial score
 let intervalTime = 200; // Initial speed
 let timerId = 0; // Timer ID for game loop
+let diamondTimeoutId = null;
+const diamondDuration = 5000;
 
 const currentUser = localStorage.getItem("currentUser");
 if (!currentUser) {
@@ -75,6 +79,8 @@ function startGame() {
   intervalTime = 200;
   msgDisplay.textContent = "";
   diamondIndex = 0;
+  clearTimeout(diamondTimeoutId);
+  removeDiamond();
 
   drawSnake();
   generateApple();
@@ -106,7 +112,7 @@ function move() {
   if (squares[currentSnake[0]].classList.contains("diamond")) {
     diamondEatSound.volume = 0.5;
     diamondEatSound.play();
-    squares[currentSnake[0]].classList.remove("diamond");
+    removeDiamond();
     diamondIndex = 0;
     score += 5;
     scoreDisplay.textContent = score;
@@ -140,16 +146,12 @@ function generateApple() {
 }
 
 function generateDiamond() {
-  console.log("Generating diamond");
-  console.log(diamondIndex);
   if (diamondIndex !== 0) return;
 
   var randomChance = Math.random();
-  console.log(randomChance);
+  console.log("Random chance for diamond:", randomChance);
   if (randomChance > 0.3) return;
 
-  diamondAppearSound.volume = 0.5;
-  diamondAppearSound.play();
   do {
     diamondIndex = Math.floor(Math.random() * squares.length);
   } while (
@@ -158,6 +160,28 @@ function generateDiamond() {
   );
 
   squares[diamondIndex].classList.add("diamond");
+  diamondAppearSound.play();
+
+  diamondContainer.classList.remove("hidden");
+
+  diamondTimerBar.classList.remove("animate-timer");
+  void diamondTimerBar.offsetWidth;
+  diamondTimerBar.classList.add("animate-timer");
+
+  clearTimeout(diamondTimeoutId);
+
+  diamondTimeoutId = setTimeout(() => {
+    removeDiamond();
+  }, diamondDuration);
+}
+
+function removeDiamond() {
+  if (diamondIndex !== 0) {
+    squares[diamondIndex].classList.remove("diamond");
+    diamondIndex = 0;
+  }
+  diamondContainer.classList.add("hidden");
+  diamondTimerBar.classList.remove("animate-timer");
 }
 
 function control(e) {
