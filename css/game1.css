@@ -128,10 +128,8 @@ button:hover {
 .timer-container {
   width: 300px;
   height: 10px;
-  border: 2px solid #333;
   background-color: #ddd;
   margin: 10px auto;
-  border-radius: 5px;
   overflow: hidden;
 }
 
