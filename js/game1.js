@@ -65,39 +65,52 @@ createGrid();
 
 // Start or restart the game
 function startGame() {
-  console.log("Game started");
-  soundtrack.volume = 0.2;
+  pauseBtn.hidden = false; // Show pause button
+
+  // Play background music
+  soundtrack.volume = 0.3;
+  soundtrack.currentTime = 0;
   soundtrack.play();
 
+  // Clear the grid of any previous snake, food, or diamond
   squares.forEach((square) => {
-    square.classList.remove(
-      "snake-head",
-      "snake-body",
-      "snake-part",
-      "food",
-      "diamond"
-    );
+    square.classList.remove("snake-head", "snake-body", "snake-part", "food");
     square.style.transform = "";
   });
 
-  squares[appleIndex].classList.remove("food");
-
+  // Reset game variables to initial state
   clearInterval(timerId);
-
+  clearTimeout(diamondTimeoutId);
   currentSnake = [2, 1, 0];
   score = 0;
   scoreDisplay.textContent = score;
   direction = 1;
   intervalTime = 200;
   msgDisplay.textContent = "";
-  diamondIndex = 0;
-  clearTimeout(diamondTimeoutId);
   removeDiamond();
+  diamondIndex = 0;
 
+  // Draw the initial snake and generate the first apple
   drawSnake();
   generateApple();
 
   timerId = setInterval(move, intervalTime);
+}
+
+function PauseGame() {
+  if (timerId) {
+    clearInterval(timerId);
+    timerId = null;
+    soundtrack.pause();
+    pauseBtn.textContent = "Resume";
+  } else {
+    timerId = setInterval(move, intervalTime);
+    soundtrack.volume = 0.3;
+    soundtrack.play();
+
+    pauseBtn.textContent = "Pause Game";
+    msgDisplay.textContent = "";
+  }
 }
 
 // Move the snake in the current direction
@@ -212,11 +225,16 @@ function control(e) {
     direction = -1;
   } else if ((e.key === "ArrowDown" || e.key === "s") && direction !== -width) {
     direction = width;
+  } else if ((e.key === "p" || e.key === "P") && timerId) {
+    PauseGame();
+  } else if ((e.key === "p" || e.key === "P") && !timerId) {
+    PauseGame();
   }
 }
 
 // Handle game over scenario
 function gameOver() {
+  pauseBtn.hidden = true;
   clearInterval(timerId);
   msgDisplay.textContent = "Game Over!";
 
@@ -279,3 +297,4 @@ function getRotationStyle(dir) {
 
 document.addEventListener("keydown", control);
 startBtn.addEventListener("click", startGame);
+pauseBtn.addEventListener("click", PauseGame);
