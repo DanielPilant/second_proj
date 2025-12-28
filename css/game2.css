@@ -94,6 +94,24 @@ button:hover {
   font-family: "Jersey 10", sans-serif;
 }
 
+#undo-btn {
+  margin-top: 15px;
+  width: 100%;
+  background-color: #ff9800;
+  font-size: 20px;
+  padding: 12px 20px;
+}
+
+#undo-btn:hover:not(:disabled) {
+  background-color: #f57c00;
+}
+
+#undo-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 #chessboard {
   display: grid;
   grid-template-columns: repeat(8, 70px);

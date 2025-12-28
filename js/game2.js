@@ -2,6 +2,7 @@ var board = [];
         var selectedSquare = null;
         var currentTurn = 'white';
         var moveHistory = [];
+        var boardHistory = []; // Stack to store board states for undo
         var moveCount = 0;
         var leaderboard = [];
         var currentUser = localStorage.getItem("currentUser");
@@ -218,6 +219,9 @@ var board = [];
             var piece = board[fromRow][fromCol];
             var capturedPiece = board[toRow][toCol];
             
+            // Save current board state before making the move
+            saveBoardState();
+            
             // Animate the move
             animateMove(fromRow, fromCol, toRow, toCol, function() {
                 board[toRow][toCol] = piece;
@@ -234,6 +238,7 @@ var board = [];
                 }
                 
                 renderBoard();
+                updateUndoButton();
             });
         }
 
@@ -432,6 +437,7 @@ var board = [];
             selectedSquare = null;
             currentTurn = 'white';
             moveHistory = [];
+            boardHistory = [];
             moveCount = 0;
             
             document.getElementById('moveHistory').innerHTML = '';
@@ -441,6 +447,59 @@ var board = [];
             
             initBoard();
             updateTurnIndicator();
+            updateUndoButton();
+        }
+
+        function saveBoardState() {
+            // Deep copy the current board state
+            var boardCopy = [];
+            for (var i = 0; i < board.length; i++) {
+                boardCopy[i] = board[i].slice();
+            }
+            
+            // Save board state along with current turn and move count
+            boardHistory.push({
+                board: boardCopy,
+                turn: currentTurn,
+                moveCount: moveCount
+            });
+        }
+
+        function undoMove() {
+            if (boardHistory.length === 0) return;
+            
+            // Get the previous state
+            var previousState = boardHistory.pop();
+            
+            // Restore the board
+            board = previousState.board;
+            currentTurn = previousState.turn;
+            moveCount = previousState.moveCount;
+            
+            // Remove the last move from history display
+            var historyDiv = document.getElementById('moveHistory');
+            if (historyDiv.lastChild) {
+                historyDiv.removeChild(historyDiv.lastChild);
+            }
+            
+            // Remove the last move from moveHistory array
+            if (moveHistory.length > 0) {
+                moveHistory.pop();
+            }
+            
+            // Update the UI
+            renderBoard();
+            updateTurnIndicator();
+            updateUndoButton();
+            clearHighlights();
+            selectedSquare = null;
+        }
+
+        function updateUndoButton() {
+            var undoBtn = document.getElementById('undo-btn');
+            if (undoBtn) {
+                undoBtn.disabled = boardHistory.length === 0;
+            }
         }
 
         initBoard();
