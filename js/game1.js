@@ -23,20 +23,30 @@ let diamondIndex = 0; // Initial diamond position
 let score = 0; // Initial score
 let intervalTime = 200; // Initial speed
 let timerId = 0; // Timer ID for game loop
-let diamondTimeoutId = null;
-const diamondDuration = 5000;
+let diamondTimeoutId = null; // Timeout ID for diamond disappearance
+const diamondDuration = 5000; // Diamond stays for 5 seconds
 
+// -------------- User and High Score Management -------------- //
+
+// Check if user is logged in
 const currentUser = localStorage.getItem("currentUser");
+
+// If not logged in, redirect to homepage
 if (!currentUser) {
   window.location.href = "../index.html";
 }
+
+// Retrieve user data and high score
 let users = JSON.parse(localStorage.getItem("users")) || [];
 const loggedInUser = users.find((user) => user.username === currentUser);
 let highScore = 0;
+
+// If user has a high score, retrieve it
 if (loggedInUser && loggedInUser.games && loggedInUser.games.snake) {
   highScore = loggedInUser.games.snake.highScore;
 }
 
+// Display the high score on the page
 highScoreDisplay.textContent = highScore;
 
 // -------------- functions -------------- //
@@ -49,6 +59,8 @@ function createGrid() {
     squares.push(square);
   }
 }
+
+// Initialize the grid
 createGrid();
 
 // Start or restart the game
@@ -88,6 +100,7 @@ function startGame() {
   timerId = setInterval(move, intervalTime);
 }
 
+// Move the snake in the current direction
 function move() {
   if (
     (currentSnake[0] + width >= width * width && direction === width) ||
@@ -98,7 +111,7 @@ function move() {
   ) {
     soundtrack.pause();
     soundtrack.currentTime = 0;
-    loseSound.volume = 0.3;
+    loseSound.volume = 0.2;
     loseSound.play();
     return gameOver();
   }
@@ -110,7 +123,7 @@ function move() {
   currentSnake.unshift(currentSnake[0] + direction);
 
   if (squares[currentSnake[0]].classList.contains("diamond")) {
-    diamondEatSound.volume = 0.5;
+    diamondEatSound.volume = 0.2;
     diamondEatSound.play();
     removeDiamond();
     diamondIndex = 0;
@@ -119,7 +132,7 @@ function move() {
   }
 
   if (squares[currentSnake[0]].classList.contains("food")) {
-    coinSound.volume = 0.5;
+    coinSound.volume = 0.2;
     coinSound.play();
     squares[currentSnake[0]].classList.remove("food");
     currentSnake.push(tail);
@@ -137,6 +150,8 @@ function move() {
   }
   drawSnake();
 }
+
+// Generate a new apple at a random position
 function generateApple() {
   do {
     appleIndex = Math.floor(Math.random() * squares.length);
@@ -145,6 +160,7 @@ function generateApple() {
   squares[appleIndex].classList.add("food");
 }
 
+// Generate a diamond at a random position with a chance
 function generateDiamond() {
   if (diamondIndex !== 0) return;
 
@@ -160,6 +176,7 @@ function generateDiamond() {
   );
 
   squares[diamondIndex].classList.add("diamond");
+  diamondAppearSound.volume = 0.2;
   diamondAppearSound.play();
 
   diamondContainer.classList.remove("hidden");
@@ -175,6 +192,7 @@ function generateDiamond() {
   }, diamondDuration);
 }
 
+// Remove the diamond from the grid
 function removeDiamond() {
   if (diamondIndex !== 0) {
     squares[diamondIndex].classList.remove("diamond");
@@ -184,6 +202,7 @@ function removeDiamond() {
   diamondTimerBar.classList.remove("animate-timer");
 }
 
+// Control the snake with arrow keys or WASD
 function control(e) {
   if ((e.key === "ArrowRight" || e.key === "d") && direction !== -1) {
     direction = 1;
@@ -196,6 +215,7 @@ function control(e) {
   }
 }
 
+// Handle game over scenario
 function gameOver() {
   clearInterval(timerId);
   msgDisplay.textContent = "Game Over!";
@@ -230,6 +250,7 @@ function gameOver() {
   }
 }
 
+// Draw the snake on the grid
 function drawSnake() {
   currentSnake.forEach((index, i) => {
     const square = squares[index];
@@ -246,6 +267,7 @@ function drawSnake() {
   });
 }
 
+// Get rotation style based on direction
 function getRotationStyle(dir) {
   if (dir === width) return "rotate(0deg)";
   if (dir === -width) return "rotate(180deg)";
