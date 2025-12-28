@@ -1,63 +1,41 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Lobby • Game Gallery</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Game Lobby</title>
+		<link rel="stylesheet" href="../css/lobby.css" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="stylesheet" href="../css/lobby.css" />
 	</head>
 	<body>
-		<header class="site-header" role="banner">
-			<div class="wrap header-bar">
-				<div class="hero-text">
-					<h1 id="greeting" aria-live="polite">Welcome</h1>
-					<p class="tagline">Pick a game and have fun!</p>
-				</div>
-				<button type="button" id="logout-btn" class="ghost-btn">Logout</button>
+		<div class="lobby-container">
+			<div class="header-bar">
+				<h1 id="greeting">Welcome</h1>
+				<button type="button" id="logout-btn">Logout</button>
 			</div>
-		</header>
 
-		<main id="main" class="site-main" role="main">
-			<section aria-labelledby="games-title" class="section">
-				<div class="wrap">
-					<h2 id="games-title">Games</h2>
-					<div id="gallery" class="gallery" role="list"></div>
-				</div>
-			</section>
+			<h2>Games</h2>
+			<div id="gallery" class="gallery"></div>
 
-			<section aria-labelledby="leaderboard-title" class="section">
-				<div class="wrap">
-					<h2 id="leaderboard-title">Your Leaderboard</h2>
-					<div class="board-card" role="region" aria-labelledby="lb-caption">
-						<div class="board-scroll">
-							<table class="leaderboard">
-								<caption id="lb-caption">Personal game stats</caption>
-								<thead>
-									<tr>
-										<th scope="col">Game</th>
-										<th scope="col">High Score</th>
-										<th scope="col">Games Played</th>
-									</tr>
-								</thead>
-								<tbody id="leaderboard-body"></tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</section>
-		</main>
-
-		<footer class="site-footer" role="contentinfo">
-			<div class="wrap">
-				<small>Made with happy colors ✨</small>
+			<h2>Your Leaderboard</h2>
+			<div class="leaderboard-wrapper">
+				<table class="leaderboard">
+					<thead>
+						<tr>
+							<th>Game</th>
+							<th>High Score</th>
+							<th>Games Played</th>
+						</tr>
+					</thead>
+					<tbody id="leaderboard-body"></tbody>
+				</table>
 			</div>
-		</footer>
+		</div>
 
 		<script src="../js/util.js" defer></script>
 		<script src="../js/lobby.js" defer></script>
