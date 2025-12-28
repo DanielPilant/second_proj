@@ -97,7 +97,9 @@ function startGame() {
   timerId = setInterval(move, intervalTime);
 }
 
-function PauseGame() {
+// Pause or resume the game
+function PauseResumeGame() {
+  // If the game is currently running, pause it
   if (timerId) {
     clearInterval(timerId);
     timerId = null;
@@ -115,6 +117,9 @@ function PauseGame() {
 
 // Move the snake in the current direction
 function move() {
+  // -------------- Check for Collisions -------------- //
+
+  // Check for collisions with walls or self
   if (
     (currentSnake[0] + width >= width * width && direction === width) ||
     (currentSnake[0] % width === width - 1 && direction === 1) ||
@@ -129,12 +134,19 @@ function move() {
     return gameOver();
   }
 
+  // -------------- Move Snake -------------- //
+
+  // Move the snake by removing the tail and adding a new head
   const tail = currentSnake.pop();
   squares[tail].classList.remove("snake-head", "snake-body", "snake-part");
   squares[tail].style.transform = "";
 
+  // Add new head based on current direction
   currentSnake.unshift(currentSnake[0] + direction);
 
+  // -------------- Check for Food and Diamond Consumption -------------- //
+
+  // Check if the snake has eaten a diamond
   if (squares[currentSnake[0]].classList.contains("diamond")) {
     diamondEatSound.volume = 0.2;
     diamondEatSound.play();
@@ -144,6 +156,7 @@ function move() {
     scoreDisplay.textContent = score;
   }
 
+  // Check if the snake has eaten an apple
   if (squares[currentSnake[0]].classList.contains("food")) {
     coinSound.volume = 0.2;
     coinSound.play();
@@ -151,13 +164,6 @@ function move() {
     currentSnake.push(tail);
     score++;
     scoreDisplay.textContent = score;
-
-    if (score % 5 === 0 && intervalTime > 50) {
-      clearInterval(timerId);
-      intervalTime = intervalTime * 0.9;
-      timerId = setInterval(move, intervalTime);
-    }
-
     generateApple();
     generateDiamond();
   }
@@ -217,18 +223,28 @@ function removeDiamond() {
 
 // Control the snake with arrow keys or WASD
 function control(e) {
-  if ((e.key === "ArrowRight" || e.key === "d") && direction !== -1) {
+  if (
+    (e.key === "ArrowRight" || e.key === "d" || e.key === "D") &&
+    direction !== -1
+  ) {
     direction = 1;
-  } else if ((e.key === "ArrowUp" || e.key === "w") && direction !== width) {
+  } else if (
+    (e.key === "ArrowUp" || e.key === "w" || e.key === "W") &&
+    direction !== width
+  ) {
     direction = -width;
-  } else if ((e.key === "ArrowLeft" || e.key === "a") && direction !== 1) {
+  } else if (
+    (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") &&
+    direction !== 1
+  ) {
     direction = -1;
-  } else if ((e.key === "ArrowDown" || e.key === "s") && direction !== -width) {
+  } else if (
+    (e.key === "ArrowDown" || e.key === "s" || e.key === "S") &&
+    direction !== -width
+  ) {
     direction = width;
-  } else if ((e.key === "p" || e.key === "P") && timerId) {
-    PauseGame();
-  } else if ((e.key === "p" || e.key === "P") && !timerId) {
-    PauseGame();
+  } else if ((e.key === "p" || e.key === "P") && (timerId || !timerId)) {
+    PauseResumeGame();
   }
 }
 
@@ -297,4 +313,4 @@ function getRotationStyle(dir) {
 
 document.addEventListener("keydown", control);
 startBtn.addEventListener("click", startGame);
-pauseBtn.addEventListener("click", PauseGame);
+pauseBtn.addEventListener("click", PauseResumeGame);
