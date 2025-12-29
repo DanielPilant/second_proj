@@ -335,9 +335,6 @@ function gameOver() {
       msgDisplay.textContent += " New High Score!";
     }
 
-    // Very important: Return the updated data into the main user
-    users[userIndex].games.snake = snakeStats;
-
     // 3. Final save to Local Storage
     saveAllUsers(users);
   }

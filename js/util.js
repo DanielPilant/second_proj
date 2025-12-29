@@ -18,6 +18,12 @@ function saveAllUsers(usersArray) {
 
 // Register a new user
 function registerUser(username, password) {
+  // Validate input
+  const errorMessage = validateInput(username, password);
+  if (errorMessage) {
+    alert(errorMessage);
+    return false;
+  }
   const users = getAllUsers(); // 1. Get everyone
 
   // 2. Check if user already exists
@@ -74,6 +80,24 @@ function loginUser(username, password) {
     alert("Incorrect username or password");
     return false;
   }
+}
+
+function validateInput(username, password) {
+  if (!username || !password) {
+    return "Username and password cannot be empty.";
+  }
+
+  if (password.length < 6) {
+    return "Password must be at least 6 characters long.";
+  }
+  const hasLetter = /[a-zA-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+
+  if (!hasLetter || !hasNumber) {
+    return "Password must contain both letters and numbers.";
+  }
+
+  return null;
 }
 
 // =============== Functions that connect the buttons in HTML to our logic ================ //
