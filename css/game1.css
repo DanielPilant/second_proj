@@ -25,9 +25,11 @@ h1 {
 .game-container {
   text-align: center;
   background: rgb(198, 255, 238);
-  padding: 40px;
+  padding: 20px;
+  height: 100vh;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 .score-board {
@@ -44,7 +46,7 @@ h1 {
 .grid {
   width: 400px;
   height: 400px;
-  background-image: url("/assets/images/snakeDirt.png");
+  background-image: url("../assets/images/snakeDirt.png");
   display: grid;
   /* Create a 20x20 grid for the game board */
   grid-template-columns: repeat(20, 1fr);
@@ -68,7 +70,7 @@ h1 {
 }
 
 .snake-head {
-  background-image: url("/assets/images/head.png");
+  background-image: url("../assets/images/head.png");
 }
 
 .snake-body {
@@ -79,7 +81,7 @@ h1 {
 
 .food {
   background-color: transparent;
-  background-image: url("/assets/images/apple.png");
+  background-image: url("../assets/images/apple.png");
   background-size: contain;
   background-position: center;
   /* Make the food pulse to attract attention */
@@ -90,7 +92,7 @@ h1 {
 
 .diamond {
   background-color: transparent;
-  background-image: url("/assets/images/diamond.png");
+  background-image: url("../assets/images/diamond.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

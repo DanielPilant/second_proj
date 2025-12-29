@@ -21,6 +21,7 @@ const btnEasy = document.getElementById("btnEasy"); // Easy difficulty button
 const btnMedium = document.getElementById("btnMedium"); // Medium difficulty button
 const btnHard = document.getElementById("btnHard"); // Hard difficulty button
 const stopBtn = document.getElementById("stopBtn"); // Stop button
+const backBtn = document.getElementById("backBtn"); // Back to lobby button
 
 // -------------- Game Variables -------------- //
 
@@ -86,6 +87,7 @@ function setDifficulty(speed, selectedBtn) {
 
 // Start or restart the game
 function startGame() {
+  startBtn.blur();
   pauseBtn.hidden = false; // Show pause button
   stopBtn.hidden = false; // Show stop button
 
@@ -377,6 +379,9 @@ btnEasy.addEventListener("click", () => setDifficulty(400, btnEasy));
 btnMedium.addEventListener("click", () => setDifficulty(200, btnMedium));
 btnHard.addEventListener("click", () => setDifficulty(100, btnHard));
 stopBtn.addEventListener("click", stopGame);
+backBtn.addEventListener("click", () => {
+  window.location.href = "lobby.html";
+});
 
 // Initial difficulty selection
 setDifficulty(200, btnMedium);
