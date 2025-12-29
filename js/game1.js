@@ -1,4 +1,7 @@
 // JavaScript for Snake Game
+// import { getAllUsers, saveAllUsers } from "./util.js";
+
+// -------------- DOM Elements -------------- //
 
 const width = 20; // 20x20 grid
 const gridElement = document.getElementById("grid"); // The main grid container
@@ -14,6 +17,12 @@ const diamondAppearSound = document.getElementById("diamond-appear-sound"); // S
 const diamondEatSound = document.getElementById("diamond-eat-sound"); // Sound when eating diamond
 const diamondTimerBar = document.getElementById("diamond-timer-bar"); // Diamond timer bar
 const diamondContainer = document.getElementById("diamond-timer-container"); // Diamond timer container
+const btnEasy = document.getElementById("btnEasy"); // Easy difficulty button
+const btnMedium = document.getElementById("btnMedium"); // Medium difficulty button
+const btnHard = document.getElementById("btnHard"); // Hard difficulty button
+const stopBtn = document.getElementById("stopBtn"); // Stop button
+
+// -------------- Game Variables -------------- //
 
 let squares = []; // Array to hold grid squares
 let currentSnake = [2, 1, 0]; // Initial snake positions
@@ -21,7 +30,8 @@ let direction = 1; // Initial direction (moving right)
 let appleIndex = 0; // Initial apple position
 let diamondIndex = 0; // Initial diamond position
 let score = 0; // Initial score
-let intervalTime = 200; // Initial speed
+let startingSpeed = 200; // Default speed
+let intervalTime = startingSpeed; // Initial speed
 let timerId = 0; // Timer ID for game loop
 let diamondTimeoutId = null; // Timeout ID for diamond disappearance
 const diamondDuration = 5000; // Diamond stays for 5 seconds
@@ -63,14 +73,31 @@ function createGrid() {
 // Initialize the grid
 createGrid();
 
+// Set difficulty level based on button click
+function setDifficulty(speed, selectedBtn) {
+  startingSpeed = speed;
+
+  btnEasy.classList.remove("selected");
+  btnMedium.classList.remove("selected");
+  btnHard.classList.remove("selected");
+
+  selectedBtn.classList.add("selected");
+}
+
 // Start or restart the game
 function startGame() {
   pauseBtn.hidden = false; // Show pause button
+  stopBtn.hidden = false; // Show stop button
 
   // Play background music
   soundtrack.volume = 0.3;
   soundtrack.currentTime = 0;
   soundtrack.play();
+
+  btnEasy.hidden = true;
+  btnMedium.hidden = true;
+  btnHard.hidden = true;
+  startBtn.textContent = "Restart Game";
 
   // Clear the grid of any previous snake, food, or diamond
   squares.forEach((square) => {
@@ -85,7 +112,7 @@ function startGame() {
   score = 0;
   scoreDisplay.textContent = score;
   direction = 1;
-  intervalTime = 200;
+  intervalTime = startingSpeed;
   msgDisplay.textContent = "";
   removeDiamond();
   diamondIndex = 0;
@@ -113,6 +140,26 @@ function PauseResumeGame() {
     pauseBtn.textContent = "Pause Game";
     msgDisplay.textContent = "";
   }
+}
+
+// Stop the game and reset everything
+function stopGame() {
+  clearInterval(timerId);
+  timerId = null;
+  soundtrack.pause();
+  soundtrack.currentTime = 0;
+  pauseBtn.hidden = true;
+  stopBtn.hidden = true;
+  msgDisplay.textContent = "";
+  // Clear the grid of any previous snake, food, or diamond
+  squares.forEach((square) => {
+    square.classList.remove("snake-head", "snake-body", "snake-part", "food");
+    square.style.transform = "";
+  });
+  btnEasy.hidden = false;
+  btnMedium.hidden = false;
+  btnHard.hidden = false;
+  startBtn.textContent = "Start Game";
 }
 
 // Move the snake in the current direction
@@ -181,12 +228,14 @@ function generateApple() {
 
 // Generate a diamond at a random position with a chance
 function generateDiamond() {
+  // Only generate if there isn't already a diamond
   if (diamondIndex !== 0) return;
 
+  // 70% chance to not generate a diamond
   var randomChance = Math.random();
-  console.log("Random chance for diamond:", randomChance);
   if (randomChance > 0.3) return;
 
+  // Find a position that is not occupied by the snake or food
   do {
     diamondIndex = Math.floor(Math.random() * squares.length);
   } while (
@@ -194,18 +243,25 @@ function generateDiamond() {
     squares[diamondIndex].classList.contains("food")
   );
 
+  // Show the diamond on the grid
   squares[diamondIndex].classList.add("diamond");
   diamondAppearSound.volume = 0.2;
   diamondAppearSound.play();
 
+  // Show and animate the diamond timer bar
   diamondContainer.classList.remove("hidden");
 
+  // Restart the CSS animation
   diamondTimerBar.classList.remove("animate-timer");
+
+  // Trigger reflow to restart the animation
   void diamondTimerBar.offsetWidth;
+
+  // Add the animation class back
   diamondTimerBar.classList.add("animate-timer");
 
+  // Set timeout to remove the diamond after duration
   clearTimeout(diamondTimeoutId);
-
   diamondTimeoutId = setTimeout(() => {
     removeDiamond();
   }, diamondDuration);
@@ -250,15 +306,18 @@ function control(e) {
 
 // Handle game over scenario
 function gameOver() {
+  // -------------- Stop the Game -------------- //
   pauseBtn.hidden = true;
   clearInterval(timerId);
   msgDisplay.textContent = "Game Over!";
 
+  // -------------- Update User Data and High Score -------------- //
+
   // 1. Retrieve the current list from memory
-  let users = JSON.parse(localStorage.getItem("users")) || [];
+  let users = getAllUsers();
 
   // 2. Find the index (location) of the user in the list
-  const userIndex = users.findIndex((u) => u.username === currentUser);
+  const userIndex = users.findIndex((user) => user.username === currentUser);
 
   // If the user is found (and they should be found if logged in)
   if (userIndex !== -1) {
@@ -280,7 +339,7 @@ function gameOver() {
     users[userIndex].games.snake = snakeStats;
 
     // 3. Final save to Local Storage
-    localStorage.setItem("users", JSON.stringify(users));
+    saveAllUsers(users);
   }
 }
 
@@ -311,6 +370,16 @@ function getRotationStyle(dir) {
   return "rotate(0deg)";
 }
 
+// -------------- Event Listeners -------------- //
+
+// Listen for key presses and button clicks
 document.addEventListener("keydown", control);
 startBtn.addEventListener("click", startGame);
 pauseBtn.addEventListener("click", PauseResumeGame);
+btnEasy.addEventListener("click", () => setDifficulty(400, btnEasy));
+btnMedium.addEventListener("click", () => setDifficulty(200, btnMedium));
+btnHard.addEventListener("click", () => setDifficulty(100, btnHard));
+stopBtn.addEventListener("click", stopGame);
+
+// Initial difficulty selection
+setDifficulty(200, btnMedium);

@@ -1,4 +1,8 @@
+/* CSS for snake game */
+
+/* General Styles */
 body {
+  /* Center the game on the screen using Flexbox */
   font-family: Arial, sans-serif;
   background-image: url("../assets/images/snake-background.jpg");
   background-size: cover;
@@ -17,6 +21,7 @@ h1 {
   font-size: 80px;
 }
 
+/* Game Container & UI */
 .game-container {
   text-align: center;
   background: rgb(198, 255, 238);
@@ -34,12 +39,14 @@ h1 {
   font-weight: 400;
   font-style: normal;
 }
+/* Game Grid */
 
 .grid {
   width: 400px;
   height: 400px;
   background-image: url("/assets/images/snakeDirt.png");
   display: grid;
+  /* Create a 20x20 grid for the game board */
   grid-template-columns: repeat(20, 1fr);
   grid-template-rows: repeat(20, 1fr);
   border: 5px solid #000000;
@@ -50,10 +57,12 @@ h1 {
   width: 20px;
   height: 20px;
 }
+/* Snake Styling */
 
 .snake-part {
   background-size: cover;
   background-position: center;
+  /* Ensure rotation happens around the center of the segment */
   background-repeat: no-repeat;
   transform-origin: center center;
 }
@@ -66,12 +75,14 @@ h1 {
   background-color: #a1c432;
   border-radius: 7px;
 }
+/* Game Items (Food & Diamond) */
 
 .food {
   background-color: transparent;
   background-image: url("/assets/images/apple.png");
   background-size: contain;
   background-position: center;
+  /* Make the food pulse to attract attention */
   background-repeat: no-repeat;
   animation: pulse 0.8s infinite alternate;
   z-index: 10;
@@ -86,9 +97,18 @@ h1 {
   animation: pulse 0.8s infinite alternate;
   z-index: 10;
 }
+/* Controls & Buttons */
+
+.control-buttons {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
 
 button {
-  padding: 10px 20px;
+  padding: 0px 20px;
   font-size: 1rem;
   cursor: pointer;
   background-color: #d82b2b;
@@ -99,12 +119,30 @@ button {
   font-weight: 400;
   font-style: normal;
   font-size: 30px;
+  height: 30px;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
+.difficulty-container {
+  margin-bottom: 15px;
+  margin: 5px auto;
+}
+
+.diff-btn {
+  font-size: 20px;
+  padding: 5px 15px;
+  background-color: #888;
+  margin: 0 5px;
+}
+
+.diff-btn.selected {
+  background-color: #0056b3;
+}
+
+/* Game Messages */
 .message {
   color: red;
   font-weight: bold;
@@ -116,6 +154,7 @@ button:hover {
   font-size: 30px;
 }
 
+/* Animations */
 @keyframes pulse {
   0% {
     transform: scale(0.9);
@@ -125,6 +164,7 @@ button:hover {
   }
 }
 
+/* Timer Bar */
 .timer-container {
   width: 300px;
   height: 10px;

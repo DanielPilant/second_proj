@@ -60,10 +60,21 @@
 
       <div class="grid" id="grid"></div>
 
-      <button id="startBtn">start game</button>
-      <button id="pauseBtn" hidden>pause game</button>
+      <div class="difficulty-container">
+        <button id="btnEasy" class="diff-btn">Easy</button>
+        <button id="btnMedium" class="diff-btn selected">Medium</button>
+        <button id="btnHard" class="diff-btn">Hard</button>
+      </div>
+
+      <div class="control-buttons">
+        <button id="startBtn">start game</button>
+        <button id="pauseBtn" hidden>pause game</button>
+        <button id="stopBtn" hidden>stop game</button>
+      </div>
+
       <div id="message" class="message"></div>
     </div>
+    <script src="../js/util.js"></script>
     <script src="../js/game1.js"></script>
   </body>
 </html>
