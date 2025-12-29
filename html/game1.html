@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <!-- Meta tags for character set and viewport -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>snake</title>
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/game1.css" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,6 +18,7 @@
     />
   </head>
   <body>
+    <!-- Audio Assets -->
     <audio loop hidden id="gamemusic">
       <source
         src="/assets/sound_effects/retro/8bit-music-for-game.mp3"
@@ -46,34 +52,43 @@
       Your browser does not support the audio element.
     </audio>
 
+    <!-- Main Game Container -->
     <div class="game-container">
       <h1>snake</h1>
 
+      <!-- Score Board -->
       <div class="score-board">
         <div>Current Score: <span id="currentScore">0</span></div>
         <div>High Score: <span id="highScore">0</span></div>
       </div>
 
+      <!-- Diamond Timer Bar -->
       <div id="diamond-timer-container" class="timer-container hidden">
         <div id="diamond-timer-bar"></div>
       </div>
 
+      <!-- Game Grid (20x20) -->
       <div class="grid" id="grid"></div>
 
+      <!-- Difficulty Selection -->
       <div class="difficulty-container">
         <button id="btnEasy" class="diff-btn">Easy</button>
         <button id="btnMedium" class="diff-btn selected">Medium</button>
         <button id="btnHard" class="diff-btn">Hard</button>
       </div>
 
+      <!-- Game Control Buttons -->
       <div class="control-buttons">
         <button id="startBtn">start game</button>
         <button id="pauseBtn" hidden>pause game</button>
         <button id="stopBtn" hidden>stop game</button>
       </div>
 
+      <!-- Message Display Area -->
       <div id="message" class="message"></div>
     </div>
+
+    <!-- Scripts -->
     <script src="../js/util.js"></script>
     <script src="../js/game1.js"></script>
   </body>

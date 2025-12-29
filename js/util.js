@@ -1,5 +1,6 @@
 // =============== Utility functions for user management ============== //
 
+// Keys for localStorage
 const USERS_KEY = "users";
 const CURRENT_USER_KEY = "currentUser";
 
@@ -82,6 +83,7 @@ function loginUser(username, password) {
   }
 }
 
+// Validate username and password
 function validateInput(username, password) {
   if (!username || !password) {
     return "Username and password cannot be empty.";
